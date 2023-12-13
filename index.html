@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="We propose to learn a universal feedforward editing function that can be applied to different objects within one second.">
+  <meta name="keywords" content="3D generation, Generative model, Editing, 3D">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SHAP-EDITOR: Instruction-guided Latent 3D Editing in Seconds</title>
+
+  <meta property="og:image" content=""/>
+  <meta property="og:title" content="SHAP-EDITOR: Instruction-guided Latent 3D Editing in Seconds" />
+  <meta property="og:description" content="We propose to learn a universal feedforward editing function that can be applied to different objects within one second." />
+  <!-- Twitter automatically scrapes this. Go to https://cards-dev.twitter.com/validator?
+      if you update and want to force Twitter to re-scrape. -->
+  <meta property="twitter:card"          content="summary" />
+  <meta property="twitter:title"         content="SHAP-EDITOR: Instruction-guided Latent 3D Editing in Seconds" />
+  <meta property="twitter:description"   content="We propose to learn a universal feedforward editing function that can be applied to different objects within one second." />
+  <meta property="twitter:image"         content="https://silent-chen.github.io/Shap-Editor/resources/teaser_v4.png" />
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VFNFH9CKNX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-VFNFH9CKNX');
+  </script>
+  <script
+      type="module"
+      src="https://gradio.s3-us-west-2.amazonaws.com/4.8.0/gradio.js">
+
+  </script>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
+  <style>
+    model-viewer {
+      width: 300px;
+      height: 300px;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./resources/pikachu.png">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <!-- <script src="./static/js/index.js"></script> -->
+</head>
+<body>
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+      <a class="navbar-item" href="https://silent-chen.github.io">
+      <span class="icon">
+          <i class="fas fa-home"></i>
+      </span>
+      </a>
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link">
+          More Research
+        </a>
+        <div class="navbar-dropdown">
+          <a class="navbar-item" href="https://silent-chen.github.io/layout-guidance">
+            Layout-guidance
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</nav>
+
+<section class="section" style="padding:0rem">
+  <div class="hero-body" style="padding:0rem">
+    <div class="container is-max-desktop" style="padding: 25px 30px; margin: 25px auto; box-shadow: 0px 0px 10px #999; border-radius: 15px;">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-3 publication-title" style="font-size: 2.2rem;"> <span style="font-size: 140%">S</span>HAP-<span style="font-size: 140%">E</span>DITOR: Instruction-guided <br> Latent 3D Editing in Seconds</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://silent-chen.github.io">Minghao Chen</a>,
+            </span>
+            <span class="author-block">
+              <a href="https://scholar.google.com/citations?user=cDMqaTYAAAAJ&hl=en">Junyu Xie</a>,
+            </span>
+            <span class="author-block">
+              <a href="">Iro Laina</a>,
+            </span>
+            <span class="author-block">
+              <a href="https://www.robots.ox.ac.uk/~vedaldi/">Andrea Vedaldi</a>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">Visual Geometry Group, University of Oxford</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://github.com/silent-chen/Shap-Editor"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+              <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="fa fa-globe"></i>
+                  </span>
+                  <span>Demo</span>
+                </a>
+              </span>
+              <br>
+              <br>
+              <br>
+            <img src="resources/teaser_v4.png" alt="teaser"> <br>
+            <h2 class="subtitle">
+              We present a method, named <span style="font-size: 140%">S</span>HAP-<span style="font-size: 140%">E</span>DITOR, aiming at fast 3D editing. We propose to learn a universal editing function that can be applied to different objects within one second.
+            </h2>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" style="padding:0rem">
+  <div class="container is-max-desktop" style="padding: 25px 50px; margin: 25px auto; box-shadow: 0px 0px 10px #999; border-radius: 15px;">
+
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered" >
+      <div class="column is-full-width">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+          We propose a novel feed-forward 3D editing framework called <span style="font-size: 140%">S</span>HAP-<span style="font-size: 140%">E</span>DITOR. Prior research on editing 3D objects primarily concentrated on editing individual objects by leveraging off-the-shelf 2D image editing networks. This is achieved via a process called distillation, which transfers knowledge from the 2D network to 3D assets. Distillation necessitates at least tens of minutes per asset to attain satisfactory editing results, and is thus not very practical. In contrast, we ask whether 3D editing can be carried out directly by a feed-forward network, eschewing test-time optimisation. In particular, we hypothesise that editing can be greatly simplified by first encoding 3D objects in a suitable latent space. We validate this hypothesis by building upon the latent space of Shap-E. We demonstrate that direct 3D editing in this space is possible and efficient by building a feed-forward editor network that only requires approximately one second per edit. Our experiments show that Shap-Editor generalises well to both in-distribution and out-of-distribution 3D assets with different prompts, exhibiting comparable performance with methods that carry out test-time optimisation for each edited instance.
+        </div>
+    </div>
+    <!--/ Abstract. -->
+  </div>
+  </div>
+</section>
+
+<section class="section" style="padding:0rem">
+  <div class="container is-max-desktop" style="padding: 25px 50px; margin: 25px auto; box-shadow: 0px 0px 10px #999; border-radius: 15px;">
+
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered" >
+      <div class="column is-full-width">
+        <h2 class="title is-3">Demo</h2>
+        <div class="content has-text-justified">
+          <gradio-app src="https://silentchen-shap-editor-demo.hf.space"></gradio-app>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+  </div>
+</section>
+
+
+<section class="section" style="padding:0rem">
+  <div class="container is-max-desktop" style="padding: 25px 50px; margin: 25px auto; box-shadow: 0px 0px 10px #999; border-radius: 15px;">
+    <div class="columns is-centered">
+      <div class="column is-full-width has-text-centered">
+        <div class="content has-text-centered">
+        <h2 class="title is-3">Overview</h2>
+        <div class="content has-text-justified">
+          <p>
+          During training, we first use the Shap-E 3D encoder to map a 3D object into the latent space. The source latent and a natural language instruction are then fed into our <span style="font-size: 140%">S</span>HAP-<span style="font-size: 140%">E</span>DITOR producing an edited latent. The edited latent and original latent are decoded into NeRFs and we render a pair of views (RGB images and depth maps) with the same viewpoint for the two different NeRF. The paired views are used for distilling knowledge from the pre-trained 2D editors with our design training objective to our <span style="font-size: 140%">S</span>HAP-<span style="font-size: 140%">E</span>DITOR. During inference, one only needs to pass the latent code to our <span style="font-size: 140%">S</span>HAP-<span style="font-size: 140%">E</span>DITOR, resulting in fast editing.
+          </p>
+        </div>
+        <div class="content has-text-centered">
+          <img src="resources/pipeline.png" width="100%" alt="overview"> <br>
+        </div>
+        </div>
+        </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding:0rem">
+  <div class="container is-max-desktop" style="padding: 25px 50px; margin: 25px auto; box-shadow: 0px 0px 10px #999; border-radius: 15px;">
+    <div class="columns is-centered">
+      <div class="column is-full-width has-text-centered">
+        <div class="content has-text-centered">
+        <h2 class="title is-3">Comparison to other 3D editing methods</h2>
+        <div class="content has-text-justified">
+          <p>
+          We provide qualitative comparison with other 3D editing methods. Both the single-prompt and multi-prompt versions of our method achieve superior local and global editing results. Our <span style="font-size: 140%">S</span>HAP-<span style="font-size: 140%">E</span>DITOR can preserve the identity of the original assets, such as the appearance and shape of the "penguin", the fine geometric details of the "vase", and the structure of the "chair".
+          </p>
+        </div>
+        <div class="content has-text-centered">
+          <img src="resources/comparison_v2.png" width="150%" alt="visor_addition_results_2">
+        </div>
+        </div>
+        </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" style="padding:0rem">
+  <div class="container is-max-desktop" style="padding: 25px 50px; margin: 25px auto; box-shadow: 0px 0px 10px #999; border-radius: 15px;">
+    <div class="columns is-centered">
+      <div class="column is-full-width has-text-centered">
+        <div class="content has-text-centered">
+        <h2 class="title is-3">Interactive mesh</h2>
+          <div class="content has-text-justified">
+            <p>
+                We provide some interactive mesh results with our method in the following.
+            </p>
+            <div class="columns is-1 is-multiline is-mobile">
+              <div class="column pb-0 mb-0 is-one-third has-text-centered">
+                <h4>Source</h4>
+              </div>
+              <div class="column pb-0 mb-0 is-one-third has-text-centered">
+                <h4>"Make it look like made of lego"</h4>
+              </div>
+              <div class="column pb-0 mb-0 is-one-third has-text-centered">
+                <h4>"Make it in cyberpunk style"</h4>
+              </div>
+            </div>
+
+            <div class="columns is-1 is-multiline is-mobile">
+              <div class="column pb-0 mb-0 is-one-third">
+                <model-viewer src="resources/glbs/a_fireman_source.glb"
+                shadow-intensity="1" style="width: 100%; height: 300px;"
+                orientation="180deg 270deg 180deg"
+                style="background: linear-gradient(#ffffff, #ada996); overflow-x: hidden;"
+                camera-controls touch-action="pan-y">
+
+                </model-viewer>
+              </div>
+              <div class="column pb-0 mb-0 is-one-third">
+                <model-viewer src="resources/glbs/a_fireman_lego.glb"
+                shadow-intensity="1" style="width: 100%; height: 300px;"
+                orientation="180deg 270deg 180deg"
+                style="background: linear-gradient(#ffffff, #ada996); overflow-x: hidden;"
+                camera-controls touch-action="pan-y">
+
+                </model-viewer>
+              </div>
+              <div class="column pb-0 mb-0 is-one-third">
+                <model-viewer src="resources/glbs/a_fireman_cyber.glb"
+                shadow-intensity="1" style="width: 100%; height: 300px;"
+                orientation="180deg 270deg 180deg"
+                style="background: linear-gradient(#ffffff, #ada996); overflow-x: hidden;"
+                camera-controls touch-action="pan-y">
+                </model-viewer>
+              </div>
+            </div>
+            <div class="columns is-1 is-multiline is-mobile">
+              <div class="column pb-0 mb-0 is-one-third">
+                <model-viewer src="resources/glbs/a_corgi_source.glb"
+                shadow-intensity="1" style="width: 100%; height: 300px;"
+                orientation="180deg 270deg 180deg"
+                style="background: linear-gradient(#ffffff, #ada996); overflow-x: hidden;"
+                camera-controls touch-action="pan-y">
+
+                </model-viewer>
+              </div>
+              <div class="column pb-0 mb-0 is-one-third">
+                <model-viewer src="resources/glbs/a_corgi_lego.glb"
+                shadow-intensity="1" style="width: 100%; height: 300px;"
+                orientation="180deg 270deg 180deg"
+                style="background: linear-gradient(#ffffff, #ada996); overflow-x: hidden;"
+                camera-controls touch-action="pan-y">
+
+                </model-viewer>
+              </div>
+              <div class="column pb-0 mb-0 is-one-third">
+                <model-viewer src="resources/glbs/a_corgi_cyber.glb"
+                shadow-intensity="1" style="width: 100%; height: 300px;"
+                orientation="180deg 270deg 180deg"
+                style="background: linear-gradient(#ffffff, #ada996); overflow-x: hidden;"
+                camera-controls touch-action="pan-y">
+                </model-viewer>
+              </div>
+
+            </div>
+            <div class="columns is-1 is-multiline is-mobile">
+              <div class="column pb-0 mb-0 is-one-third">
+                <model-viewer src="resources/glbs/a_chair_source.glb"
+                shadow-intensity="1" style="width: 100%; height: 300px;"
+                orientation="180deg 270deg 180deg"
+                style="background: linear-gradient(#ffffff, #ada996); overflow-x: hidden;"
+                camera-controls touch-action="pan-y">
+
+                </model-viewer>
+              </div>
+              <div class="column pb-0 mb-0 is-one-third">
+                <model-viewer src="resources/glbs/a_chair_lego.glb"
+                shadow-intensity="1" style="width: 100%; height: 300px;"
+                orientation="180deg 270deg 180deg"
+                style="background: linear-gradient(#ffffff, #ada996); overflow-x: hidden;"
+                camera-controls touch-action="pan-y">
+
+                </model-viewer>
+              </div>
+              <div class="column pb-0 mb-0 is-one-third">
+                <model-viewer src="resources/glbs/a_chair_cyber.glb"
+                shadow-intensity="1" style="width: 100%; height: 300px;"
+                orientation="180deg 270deg 180deg"
+                style="background: linear-gradient(#ffffff, #ada996); overflow-x: hidden;"
+                camera-controls touch-action="pan-y">
+                </model-viewer>
+              </div>
+            </div>
+            <div class="columns is-1 is-multiline is-mobile">
+              <div class="column pb-0 mb-0 is-one-third has-text-centered">
+                <h4>Source</h4>
+              </div>
+              <div class="column pb-0 mb-0 is-one-third has-text-centered">
+                <h4>"Add a snowboard to it"</h4>
+              </div>
+              <div class="column pb-0 mb-0 is-one-third has-text-centered">
+                <h4>"Add a crown to it"</h4>
+              </div>
+            </div>
+            <div class="columns is-1 is-multiline is-mobile">
+              <div class="column pb-0 mb-0 is-one-third">
+                <model-viewer src="resources/glbs/a_robot_source.glb"
+                shadow-intensity="1" style="width: 100%; height: 300px;"
+                orientation="180deg 270deg 180deg"
+                style="background: linear-gradient(#ffffff, #ada996); overflow-x: hidden;"
+                camera-controls touch-action="pan-y">
+
+                </model-viewer>
+              </div>
+              <div class="column pb-0 mb-0 is-one-third">
+                <model-viewer src="resources/glbs/a_robot_snowboard.glb"
+                shadow-intensity="1" style="width: 100%; height: 300px;"
+                orientation="180deg 270deg 180deg"
+                style="background: linear-gradient(#ffffff, #ada996); overflow-x: hidden;"
+                camera-controls touch-action="pan-y">
+
+                </model-viewer>
+              </div>
+              <div class="column pb-0 mb-0 is-one-third">
+                <model-viewer src="resources/glbs/a_robot_crown.glb"
+                shadow-intensity="1" style="width: 100%; height: 300px;"
+                orientation="180deg 270deg 180deg"
+                style="background: linear-gradient(#ffffff, #ada996); overflow-x: hidden;"
+                camera-controls touch-action="pan-y">
+                </model-viewer>
+              </div>
+            </div>
+            <div class="columns is-1 is-multiline is-mobile">
+              <div class="column pb-0 mb-0 is-one-third">
+                <model-viewer src="resources/glbs/a_bear_source.glb"
+                shadow-intensity="1" style="width: 100%; height: 300px;"
+                orientation="180deg 270deg 180deg"
+                style="background: linear-gradient(#ffffff, #ada996); overflow-x: hidden;"
+                camera-controls touch-action="pan-y">
+
+                </model-viewer>
+              </div>
+              <div class="column pb-0 mb-0 is-one-third">
+                <model-viewer src="resources/glbs/a_bear_snowboard.glb"
+                shadow-intensity="1" style="width: 100%; height: 300px;"
+                orientation="180deg 270deg 180deg"
+                style="background: linear-gradient(#ffffff, #ada996); overflow-x: hidden;"
+                camera-controls touch-action="pan-y">
+
+                </model-viewer>
+              </div>
+              <div class="column pb-0 mb-0 is-one-third">
+                <model-viewer src="resources/glbs/a_bear_crown.glb"
+                shadow-intensity="1" style="width: 100%; height: 300px;"
+                orientation="180deg 270deg 180deg"
+                style="background: linear-gradient(#ffffff, #ada996); overflow-x: hidden;"
+                camera-controls touch-action="pan-y">
+                </model-viewer>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding:0rem">
+  <div class="container is-max-desktop" style="padding: 25px 50px; margin: 25px auto; box-shadow: 0px 0px 10px #999; border-radius: 15px;">
+    <div class="columns is-centered">
+      <div class="column is-full-width has-text-centered">
+        <div class="content has-text-centered">
+        <h2 class="title is-3">Additional editing results</h2>
+          <div class="content has-text-justified">
+          <p>
+            We provide some editing results with our method in the following, including global editing and local editing.
+          </p>
+        </div>
+          <h2 class="title is-4">Global editing</h2>
+      <video id="teaser" autoplay muted loop playsinline width="150%" style="object-fit: cover; outline: none">
+        <source src="resources/global_editing_1.mp4"
+                type="video/mp4">
+      </video>
+                <video autoplay muted loop playsinline width="150%">
+        <source src="resources/global_editing_2.mp4"
+                type="video/mp4">
+      </video>
+          <video autoplay muted loop playsinline width="150%">
+        <source src="resources/global_editing_3.mp4"
+                type="video/mp4">
+      </video>
+          <h2 class="title is-4">Local editing</h2>
+          <video autoplay muted loop playsinline width="150%">
+        <source src="resources/local_editing_1.mp4"
+                type="video/mp4">
+      </video>
+          <video autoplay muted loop playsinline width="150%">
+        <source src="resources/local_editing_2.mp4"
+                type="video/mp4">
+      </video>
+          </div>
+        </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="BibTeX" style="padding:0rem">
+  <div class="container is-max-desktop content" style="padding: 25px 50px; margin: 25px auto; box-shadow: 0px 0px 10px #999; border-radius: 15px;">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@article{chen2023shapeditor,
+      title={SHAP-EDITOR: Instruction-guided Latent 3D Editing in Seconds},
+      author={Minghao Chen and Junyu Xie and Iro Laina and Andrea Vedaldi},
+      journal={arXiv preprint arXiv:xxx},
+      year={2023}
+}</code></pre>
+  </div>
+</section>
+
+<section class="section" id="Acknowledgements" style="padding:0rem">
+  <div class="container is-max-desktop content" style="padding: 25px 50px; margin: 25px auto; box-shadow: 0px 0px 10px #999; border-radius: 15px;">
+    <h2 class="title">Acknowledgements</h2>
+    <p>
+      This research is supported by ERC-CoG UNION 101001212.
+    </p>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This webpage template is adapted from <a
+            href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> and <a
+            href="https://3dmagicpony.github.io/">MagicPony</a>, under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0 License</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
