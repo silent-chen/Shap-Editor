@@ -1,4 +1,4 @@
-## Official implementation of "SHAP-EDITOR: Instruction-guided Latent 3D Editing in Seconds"
+# Official implementation of "SHAP-EDITOR: Instruction-guided Latent 3D Editing in Seconds"
 
----
-# Code is coming soon.
+
+## Code is coming soon.
