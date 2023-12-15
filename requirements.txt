@@ -1,0 +1,17 @@
+filelock
+pillow
+torch
+fire
+humanize
+requests
+tqdm
+matplot
+scikit-image
+scipy
+numpy
+blobfile
+clip @ git+https://github.com/openai/CLIP.git
+trimesh
+
+# gradio demo
+gradio
