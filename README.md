@@ -4,6 +4,10 @@ Minghao Chen, Junyu Xie, Iro Laina, Andrea Vedaldi
 
 [Paper](https://arxiv.org/abs/2312.09246) | [Webpage](https://silent-chen.github.io/Shap-Editor/) | [Demo](https://huggingface.co/spaces/silentchen/Shap_Editor_demo)
 
+<div align="center">
+    <img width="100%" alt="teaser" src="https://github.com/silent-chen/Shap-Editor/blob/gh-page/resources/teaser_v4.png?raw=true"/>
+</div>
+We present a method, named Shap-Editor, aiming at fast 3D editing. We propose to learn a universal editing function that can be applied to different objects within one second.
 
 
 ## News:
