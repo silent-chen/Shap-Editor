@@ -57,7 +57,6 @@ def decode_latent_images(
         ),
         options=AttrDict(rendering_mode=rendering_mode, render_with_direction=False),
     )
-    import pdb; pdb.set_trace()
     arr = decoded.channels.clamp(0, 255).to(torch.uint8)[0].cpu().numpy()
     return [Image.fromarray(x) for x in arr]
 
