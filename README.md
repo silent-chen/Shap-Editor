@@ -51,12 +51,11 @@ python generate_3d.py --prompt 'a shark' -output_dir PATH_TO_OUTPUT_DIR --export
 ```
 2. Encoded Latents from real 3D assets. You can encode your own 3D assets into latents following Shap-E! As Shap-E requires blender to render multi-view images for 3D encoding, you need to first install Blender version >= 3.3.1, and set the environment variable BLENDER_PATH to the path of the Blender executable. For more details, please refer to the [original repo](https://github.com/openai/shap-e). After that you can simply run to encode the 3D asset:
 ```buildoutcfg
-python encode_3d.py --obj_path PATH_TO_YOUR_OBJ --output_dir PATH_TO_OUTPUT_DIR
+python encode_3d.py --latent_path PATH_TO_YOUR_OBJ --output_dir PATH_TO_OUTPUT_DIR
 ```
 ### Step 2: Edit the latent with pre-trained Shap-Editor
 After get the latent of the 3D asset, you can edit the latent within 1 sec using the pre-trained editing model or editing model you trained yourself. 
 ```buildoutcfg
-python inference.py --obj_path PATH_TO_YOUR_OBJ --model_path PATH_TO_THE_PRETRAINED_MODEL --prompt "YOUR PROMPT" --export_mesh --export_render
 ```
 
 
