@@ -3,9 +3,13 @@ import torch
 from shap_e.diffusion.sample import sample_latents
 from shap_e.diffusion.gaussian_diffusion import diffusion_from_config
 from shap_e.models.download import load_model, load_config
+from shap_e.util.notebooks import decode_latent_mesh
 import argparse
 import os
-def generate_latent(xm, model, diffusion, prompt, guidance_scale, batch_size, output_dir):
+import trimesh
+import numpy as np
+
+def generate_latent(xm, model, diffusion, prompt, guidance_scale, batch_size, output_dir, export_mesh=False):
 
     latents = sample_latents(
         batch_size=batch_size,
@@ -26,6 +30,25 @@ def generate_latent(xm, model, diffusion, prompt, guidance_scale, batch_size, ou
     os.makedirs(output_dir, exist_ok=True)
     for idx, latent in enumerate(latents):
         torch.save(latent, f'{output_dir}/{idx}.pth')
+        if export_mesh:
+            t = decode_latent_mesh(xm, latent).tri_mesh()
+            mesh_output_path = f'{output_dir}/{idx}.obj'
+            with open(mesh_output_path, 'w') as f:
+                t.write_obj(f)
+            mesh = trimesh.load_mesh(mesh_output_path)
+
+            angle = np.radians(180)
+            axis = [0, 1, 0]
+
+            rotation_matrix = trimesh.transformations.rotation_matrix(angle, axis)
+            mesh.apply_transform(rotation_matrix)
+            angle = np.radians(90)
+            axis = [1, 0, 0]
+
+            rotation_matrix = trimesh.transformations.rotation_matrix(angle, axis)
+            mesh.apply_transform(rotation_matrix)
+
+            mesh.export(mesh_output_path)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -33,6 +56,8 @@ if __name__ == '__main__':
     parser.add_argument("--output_dir", type=str, default='./output/example/', help="path to output directory")
     parser.add_argument("--guidance_scale", type=float, default=15.0)
     parser.add_argument('--batch_size', type=int, default=4)
+    parser.add_argument('--export_mesh', action='store_true')
+
     args = parser.parse_args()
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -42,6 +67,6 @@ if __name__ == '__main__':
     diffusion = diffusion_from_config(load_config('diffusion'))
 
     os.makedirs(args.output_dir, exist_ok=True)
-    generate_latent(xm, model, diffusion, prompt=args.prompt, guidance_scale=args.guidance_scale, batch_size=args.batch_size, output_dir=args.output_dir)
+    generate_latent(xm, model, diffusion, prompt=args.prompt, guidance_scale=args.guidance_scale, batch_size=args.batch_size, output_dir=args.output_dir, export_mesh=args.export_mesh)
 
 

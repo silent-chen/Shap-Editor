@@ -81,8 +81,8 @@ def main():
     parser.add_argument("--model_path", type=str, help="path to pretrained model")
     parser.add_argument("--prompt", type=str, default='turn it into gold')
     parser.add_argument("--rand_seed", type=int, default=42)
-    parser.add_argument("--export_mesh", type=bool, default=True)
-    parser.add_argument("--export_render", type=bool, default=False)
+    parser.add_argument('--export_mesh', action='store_true')
+    parser.add_argument("--export_render",  action='store_true')
     parser.add_argument("--render_size", type=int, default=256)
     parser.add_argument("--render_mode", type=str, default='stf')
 
